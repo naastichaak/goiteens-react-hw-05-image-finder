@@ -14,12 +14,14 @@ function App() {
   const [page, setPage] = useState(1);
   const [totalImages, setTotalImages] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (query === "") {
       return;
     }
     setLoading(true);
+    setError(null);
     axios
       .get("https://pixabay.com/api/", {
         params: {
@@ -35,6 +37,7 @@ function App() {
         setImages((prevImages) => [...prevImages, ...res.data.hits]);
         setTotalImages(res.data.totalHits);
       })
+      .catch((error) => setError(error.message))
       .finally(() => setLoading(false));
   }, [query, page]);
 
@@ -69,6 +72,7 @@ function App() {
         {activeImage && <Modal image={activeImage} onClose={closeModal} />}
 
         <Searchbar onSubmit={handleSearch} />
+        {error && <p>{error}</p>}
         <Loader visibility={loading} />
         <ImageGallery images={images} onOpen={openModal} />
       </div>
